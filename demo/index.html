@@ -131,7 +131,25 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        /* 📱 Mobile Responsiveness & Performance Anti-Lag */
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: flex-start; }
+            .workspace { display: flex; flex-direction: column; height: auto; }
+            .sidebar, .chat-container, .doc-container { 
+                box-shadow: none; 
+                border-radius: 12px;
+            }
+            .chat-messages { height: 400px; flex: none; }
+            .doc-paper { min-height: 500px; padding: 20px; font-size: 13px; }
+            .doc-edit-btn { top: 16px; right: 16px; }
+            .approval-bar { flex-direction: column; text-align: center; }
+            .approve-btn { width: 100%; }
+        }
+        
+        /* 🚀 Hardware Acceleration */
+        .reasoning-step, .digital-sig, .status-dot, .send-btn {
+            will-change: transform;
+        }
     </style>
 </head>
 <body>
