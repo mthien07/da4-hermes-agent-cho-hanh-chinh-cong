@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hermes Agent — Trợ lý AI cho Hành chính công</title>
+    <meta name="description" content="Demo hệ thống Hermes Agent hỗ trợ nghiệp vụ hành chính công cấp xã/phường">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #070c16;
+            --bg-panel: #0d1527;
+            --card-glass: rgba(20, 32, 58, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #3b82f6;
+            --accent-teal: #00f0ff;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.04) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent-teal));
+            color: #070c16;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .title-group h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .title-group p {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+        }
+
+        .status-pill {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* Main Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 280px 1fr 1.2fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 650px;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Panel: Navigation & Scenarios */
+        .sidebar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-sub);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dept-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dept-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-sub);
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dept-btn:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .dept-btn.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .scenario-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .scenario-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 12px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .scenario-btn:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-1px);
+        }
+
+        /* Center Panel: Interactive Chat & Agent Log */
+        .chat-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            height: 48px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 13px;
+            font-weight: 600;
+            gap: 8px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 480px;
+        }
+
+        .message {
+            max-width: 90%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .msg-user {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-agent {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Typing & Reasoning Steps */
+        .reasoning-box {
+            background: rgba(0,0,0,0.15);
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--accent-teal);
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .reasoning-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .reasoning-step.active {
+            opacity: 1;
+            color: var(--accent-teal);
+        }
+
+        .reasoning-step.done {
+            opacity: 0.8;
+            color: var(--accent-green);
+        }
+
+        .reasoning-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .chat-input-bar {
+            border-top: 1px solid var(--border-glass);
+            padding: 14px;
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .chat-input-bar input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            outline: none;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .chat-input-bar input:focus {
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Right Panel: Document Viewer (Paper style) */
+        .doc-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .doc-viewer {
+            flex: 1;
+            padding: 24px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-y: auto;
+            position: relative;
+            max-height: 480px;
+            margin: 16px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        .doc-header {
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .doc-title {
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .doc-body {
+            text-align: justify;
+        }
+
+        .doc-footer {
+            margin-top: 32px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .doc-sign-place {
+            width: 180px;
+            text-align: center;
+        }
+
+        /* Edit Overlay */
+        .doc-edit-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(15, 23, 42, 0.15);
+            color: #1e293b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .doc-edit-btn:hover {
+            background: #0f172a;
+            color: white;
+        }
+
+        /* Human-in-the-loop Approval Banner */
+        .approval-bar {
+            background: rgba(0,0,0,0.25);
+            border-top: 1px solid var(--border-glass);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .approval-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .approval-status {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .approval-status.approved {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .approve-btn {
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            color: #070c16;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+        }
+
+        .approve-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Signature visual animation */
+        .digital-sig {
+            border: 2px dashed var(--accent-red);
+            padding: 6px 12px;
+            color: var(--accent-red);
+            font-family: monospace;
+            font-weight: 700;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 12px;
+            transform: rotate(-5deg);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .digital-sig.visible {
+            opacity: 1;
+        }
+
+        /* Hidden helper */
+        .hidden { display: none !important; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <div class="logo-badge">H</div>
+                <div class="title-group">
+                    <h1>Hermes Agent</h1>
+                    <p>Hệ thống AI Agent 3 tầng hỗ trợ dịch vụ Hành chính công</p>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    <span>Hermes Engine Active</span>
+                </div>
+                <div style="color: var(--text-sub);">Memory: 3,429 records</div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="workspace">
+            
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <div>
+                    <div class="section-title">📂 Lựa chọn phòng ban</div>
+                    <div class="dept-list">
+                        <button class="dept-btn active" onclick="switchDept('diachich')">🗺️ Địa chính - Đất đai</button>
+                        <button class="dept-btn" onclick="switchDept('yte')">🏥 Trạm Y tế xã</button>
+                        <button class="dept-btn" onclick="switchDept('vanhoa')">📢 Văn hóa - Tuyên truyền</button>
+                        <button class="dept-btn" onclick="switchDept('vanphong')">📋 Văn phòng - Thống kê</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-title">🎯 Kịch bản mẫu sẵn có</div>
+                    
+                    <div class="scenario-box" id="scen-diachich">
+                        <button class="scenario-btn" onclick="runScenario('diachich-1')">📝 Lập Biên bản kiểm tra hiện trạng thửa đất số 79</button>
+                        <button class="scenario-btn" onclick="runScenario('diachich-2')">🔍 Tra cứu quy trình đăng ký biến động đất đai</button>
+                    </div>
+
+                    <div class="scenario-box hidden" id="scen-yte">
+                        <button class="scenario-btn" onclick="runScenario('yte-1')">📊 Báo cáo thống kê tiêm chủng mở rộng quý 1</button>
+                        <button class="scenario-btn" onclick="runScenario('yte-2')">⚠️ Tờ trình triển khai diệt lăng quăng phòng dịch</button>
+                    </div>
+
+                    <div class="scenario-box hidden" id="scen-vanhoa">
+                        <button class="scenario-btn" onclick="runScenario('vanhoa-1')">🎙️ Soạn kịch bản phát thanh phòng chống sốt xuất huyết</button>
+                        <button class="scenario-btn" onclick="runScenario('vanhoa-2')">✍️ Soạn thư mời kỷ niệm ngày thương binh liệt sĩ</button>
+                    </div>
+
+                    <div class="scenario-box hidden" id="scen-vanphong">
+                        <button class="scenario-btn" onclick="runScenario('vanphong-1')">📋 Dự thảo báo cáo công tác cải cách hành chính tuần</button>
+                        <button class="scenario-btn" onclick="runScenario('vanphong-2')">📅 Tờ trình xin chủ trương nâng cấp thiết bị CNTT</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Chat/Logs Panel -->
+            <div class="chat-container">
+                <div class="panel-header">
+                    <span>💬 Cổng hội thoại Hermes Agent</span>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message msg-agent">
+                        Chào đồng chí! Tôi là trợ lý AI Hermes. Hãy chọn phòng ban và kịch bản nghiệp vụ ở thanh bên trái, hoặc mô tả công việc cần làm trực tiếp tại ô chat để bắt đầu.
+                    </div>
+                </div>
+
+                <div class="chat-input-bar">
+                    <input type="text" id="chatInput" placeholder="Nhập yêu cầu nghiệp vụ hành chính tại đây...">
+                    <button class="send-btn" onclick="sendCustomMessage()">➔</button>
+                </div>
+            </div>
+
+            <!-- Right Document Preview Panel -->
+            <div class="doc-container">
+                <div class="panel-header" style="justify-content: space-between;">
+                    <span>📄 Văn bản kết xuất (Dự thảo)</span>
+                </div>
+                
+                <div class="doc-viewer" id="docViewer">
+                    <button class="doc-edit-btn" onclick="alert('Đã kích hoạt chế độ chỉnh sửa trực tiếp trên tài liệu!')">✏️ Sửa nhanh</button>
+                    <div id="docPlaceholder" style="text-align: center; color: #64748b; margin-top: 120px;">
+                        <span style="font-size: 48px; display: block; margin-bottom: 16px;">📄</span>
+                        Chưa có tài liệu nào được tạo ra.<br>Hãy kích hoạt một kịch bản ở bên trái để Hermes Agent kết xuất.
+                    </div>
+                    
+                    <div id="docRealContent" class="hidden">
+                        <div class="doc-header">
+                            CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>
+                            Độc lập - Tự do - Hạnh phúc<br>
+                            <span style="font-weight: normal; font-size:11px;">--------------------------</span>
+                        </div>
+                        <div style="text-align: left; font-size: 11px; margin-bottom: 16px;">
+                            UBND XÃ THẠNH TÂN<br>
+                            Tổ kiểm tra địa chính
+                        </div>
+                        <center>
+                            <div class="doc-title" id="previewTitle">BIÊN BẢN KIỂM TRA HIỆN TRẠNG</div>
+                            <div style="font-style: italic; font-size: 11px; margin-top: -6px; margin-bottom: 20px;">(V/v: Xác định ranh giới sử dụng đất tại thửa đất số 79)</div>
+                        </center>
+                        <div class="doc-body" id="previewBody">
+                            Hôm nay, ngày 23 tháng 6 năm 2026, tại thực địa thửa đất số 79, tờ bản đồ số 12, tọa lạc tại ấp Thạnh Trung, xã Thạnh Tân, thành phố Tây Ninh.<br><br>
+                            Chúng tôi gồm:<br>
+                            1. Ông Nguyễn Văn Hùng - Chức vụ: Cán bộ Địa chính xã.<br>
+                            2. Ông Lê Minh Tâm - Chức vụ: Trưởng ấp Thạnh Trung.<br><br>
+                            Đã tiến hành lập biên bản kiểm tra hiện trạng sử dụng đất của hộ gia đình ông Trần Văn B. Hiện trạng ghi nhận: Ranh giới thửa đất rõ ràng, không tranh chấp với các hộ xung quanh. Đúng diện tích 250m2 theo hồ sơ đo đạc kỹ thuật.
+                        </div>
+                        
+                        <div class="doc-footer">
+                            <div class="doc-sign-place">
+                                <strong>Người lập biên bản</strong><br>
+                                <span style="font-size:10px; color:#64748b;">(Ký, ghi rõ họ tên)</span>
+                            </div>
+                            <div class="doc-sign-place">
+                                <strong>Xác nhận của UBND xã</strong><br>
+                                <span style="font-size:10px; color:#64748b;">(Ký số số hóa)</span>
+                                <div class="digital-sig" id="digitalSig">
+                                    [ ĐÃ KÝ SỐ ]<br>
+                                    UBND XÃ THẠNH TÂN<br>
+                                    2026-06-23
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approval Action -->
+                <div class="approval-bar">
+                    <div class="approval-info">
+                        <div class="approval-status" id="appStatus">Chưa có file</div>
+                        <span style="font-size: 11px; color: var(--text-sub);" id="appInfo">Vui lòng tạo tài liệu</span>
+                    </div>
+                    <button class="approve-btn" id="approveBtn" disabled onclick="approveDocument()">Phê duyệt & Phát hành</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Switch department
+        function switchDept(dept) {
+            document.querySelectorAll('.dept-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.scenario-box').forEach(box => box.classList.add('hidden'));
+
+            event.target.classList.add('active');
+            document.getElementById('scen-' + dept).classList.remove('hidden');
+        }
+
+        // Database templates
+        const templates = {
+            'diachich-1': {
+                prompt: "Tạo Biên bản kiểm tra hiện trạng sử dụng đất tại thửa 79, xã Thạnh Tân, Tây Ninh.",
+                steps: [
+                    "Nhận diện ý lệnh: Lập biên bản hành chính địa chính.",
+                    "Tìm kiếm biểu mẫu chuẩn ban hành bởi Sở TN&MT Tây Ninh.",
+                    "Lấy dữ liệu địa chính: Thửa 79, tờ bản đồ 12, chủ sở hữu Trần Văn B.",
+                    "Tạo tài liệu dự thảo, tự động điền các thông tin pháp lý."
+                ],
+                title: "BIÊN BẢN KIỂM TRA HIỆN TRẠNG SỬ DỤNG ĐẤT",
+                body: "Hôm nay, vào lúc 09 giờ 00 phút ngày 23 tháng 6 năm 2026, tại thực địa thửa đất số 79, tờ bản đồ số 12, tọa lạc tại ấp Thạnh Trung, xã Thạnh Tân, thành phố Tây Ninh.<br><br>Chúng tôi gồm:<br>1. Ông Nguyễn Văn Hùng - Chức vụ: Cán bộ Địa chính xã Thạnh Tân.<br>2. Ông Lê Minh Tâm - Chức vụ: Trưởng ấp Thạnh Trung.<br><br>Tiến hành lập biên bản kiểm tra đối với hộ gia đình ông Trần Văn B. Ghi nhận hiện trạng: Ranh giới thửa đất rõ ràng, sử dụng ổn định, đúng cột mốc cột mốc đo đạc số 04, không xảy ra tranh chấp lấn chiếm với các thửa đất liền kề. Kính trình UBND xã phê duyệt chủ trương cấp giấy chứng nhận quyền sử dụng đất."
+            },
+            'diachich-2': {
+                prompt: "Quy trình đăng ký biến động đất đai khi chuyển nhượng quyền sử dụng đất tại Tây Ninh.",
+                steps: [
+                    "Tìm kiếm Luật Đất đai 2024 điều 133.",
+                    "Tra cứu quy trình tiếp nhận một cửa cấp xã phường Tây Ninh.",
+                    "Trích xuất: 3 bước cơ bản, thời hạn xử lý không quá 15 ngày."
+                ],
+                title: "HƯỚNG DẪN QUY TRÌNH ĐĂNG KÝ BIẾN ĐỘNG ĐẤT ĐAI",
+                body: "<b>QUY TRÌNH TIẾP NHẬN VÀ XỬ LÝ HỒ SƠ BIẾN ĐỘNG ĐẤT ĐAI (CẤP XÃ):</b><br><br>1. <b>Bước 1: Tiếp nhận hồ sơ:</b> Hộ gia đình nộp hồ sơ chuyển nhượng tại bộ phận một cửa UBND xã Thạnh Tân. Cán bộ một cửa kiểm tra tính đầy đủ pháp lý của hồ sơ.<br><br>2. <b>Bước 2: Xác minh thực địa:</b> Cán bộ địa chính tiến hành kiểm tra thực địa thửa đất, kiểm tra ranh mốc sử dụng và lập biên bản hiện trạng (nếu cần).<br><br>3. <b>Bước 3: Chuyển Văn phòng đăng ký đất đai:</b> Trong thời hạn 03 ngày làm việc kể từ ngày nhận đủ hồ sơ, UBND xã tiến hành xác nhận và chuyển hồ sơ lên Chi nhánh Văn phòng đăng ký đất đai thành phố Tây Ninh để cấp đổi sổ."
+            },
+            'yte-1': {
+                prompt: "Lập Báo cáo thống kê chương trình tiêm chủng mở rộng quý 1 tại Trạm y tế xã Thạnh Tân.",
+                steps: [
+                    "Truy xuất dữ liệu cơ sở dữ liệu tiêm chủng nội bộ.",
+                    "Tính toán tổng số trẻ em trong độ tuổi tiêm chủng trên địa bàn xã.",
+                    "Phân tích tỷ lệ hoàn thành tiêm vắc-xin 5-trong-1.",
+                    "Soạn dự thảo báo cáo gửi Trung tâm Y tế Thành phố."
+                ],
+                title: "BÁO CÁO THỐNG KÊ TIÊM CHỦNG MỞ RỘNG - QUÝ 1/2026",
+                body: "Kính gửi: Trung tâm Y tế thành phố Tây Ninh.<br><br>Trạm Y tế xã Thạnh Tân xin báo cáo kết quả tiêm chủng mở rộng cho trẻ em dưới 1 tuổi trong Quý 1 năm 2026:<br><br>- Tổng số trẻ em trong diện tiêm chủng trên địa bàn xã: 145 trẻ.<br>- Số trẻ đã được tiêm chủng đầy đủ: 138 trẻ (Đạt tỷ lệ: 95.1%).<br>- Số trẻ chưa tiêm đầy đủ do hoãn tiêm y tế: 7 trẻ.<br>- Tỷ lệ tiêm vắc xin phối hợp 5 trong 1 (DPT-VGB-Hib) đạt 96.2%.<br><br>Đánh giá chung: Công tác tiêm phòng diễn ra an toàn, không ghi nhận trường hợp nào có phản ứng phụ nghiêm trọng sau tiêm chủng."
+            },
+            'yte-2': {
+                prompt: "Tờ trình triển khai chiến dịch diệt lăng quăng phòng dịch sốt xuất huyết tại Thạnh Tân.",
+                steps: [
+                    "Tra cứu chỉ thị phòng chống dịch bệnh của Sở Y tế Tây Ninh.",
+                    "Tổng hợp số ca nhiễm sốt xuất huyết tại xã trong 2 tuần qua (3 ca mới).",
+                    "Dự toán nhân lực, hóa chất phun phòng và lập tờ trình xin chủ trương cấp kinh phí."
+                ],
+                title: "TỜ TRÌNH XIN TRIỂN KHAI CHIẾN DỊCH DIỆT LĂNG QUĂNG",
+                body: "Kính gửi: Chủ tịch UBND xã Thạnh Tân.<br><br>Trước tình hình diễn biến phức tạp của dịch bệnh sốt xuất huyết, trong 2 tuần qua trên địa bàn ấp Thạnh Trung ghi nhận thêm 03 ca mắc mới. Trạm y tế kính trình UBND xã phê duyệt chủ trương triển khai chiến dịch tổng vệ sinh môi trường, diệt lăng quăng phòng dịch:<br><br>1. <b>Thời gian dự kiến:</b> Chủ nhật ngày 28/06/2026.<br>2. <b>Nội dung:</b> Ra quân dọn dẹp vệ sinh, úp lu khạp chứa nước, phát tờ rơi tuyên truyền tại 100% hộ dân.<br>3. <b>Kinh phí đề xuất:</b> 2.500.000đ cấp phát hóa chất diệt lăng quăng và hỗ trợ lực lượng đoàn thanh niên tham gia ra quân."
+            },
+            'vanhoa-1': {
+                prompt: "Soạn kịch bản phát thanh tuyên truyền phòng chống dịch sốt xuất huyết phát trên đài truyền thanh xã.",
+                steps: [
+                    "Nhận diện tác vụ: Sáng tạo nội dung thông tin tuyên truyền.",
+                    "Soạn thảo lời thoại phát thanh viên, độ dài khoảng 2 phút phát sóng.",
+                    "Sử dụng ngôn từ bình dân, dễ hiểu, nhấn mạnh khẩu hiệu hành động."
+                ],
+                title: "KỊCH BẢN TRUYỀN THANH: PHÒNG CHỐNG SỐT XUẤT HUYẾT",
+                body: "<b>(Phát nhạc hiệu tuyên truyền hành chính)</b><br><br><b>Phát thanh viên:</b> Alô! Alô! Kính thưa bà con cô bác và toàn thể nhân dân xã Thạnh Tân! Hiện nay đang là mùa mưa, thời tiết thuận lợi cho muỗi vằn truyền bệnh sốt xuất huyết sinh sản và phát triển. Để chủ động phòng bệnh, bảo vệ sức khỏe cho bản thân và gia đình, Trạm Y tế xã Thạnh Tân khuyến cáo bà con thực hiện tốt các biện pháp sau:<br><br>1. Đậy kín tất cả các dụng cụ chứa nước để muỗi không vào đẻ trứng.<br>2. Hàng tuần thực hiện thả cá vào bể chứa nước lớn, cọ rửa các dụng cụ chứa nước vừa và nhỏ.<br>3. Thay nước bình hoa, bỏ muối hoặc dầu vào bát nước kê chạn bát.<br>4. Ngủ màn kể cả ban ngày, mặc quần áo dài tay phòng muỗi đốt.<br><br><i>Sốt xuất huyết là bệnh nguy hiểm, hiện chưa có vắc-xin phòng bệnh. Không có lăng quăng, không có muỗi vằn, không có sốt xuất huyết!</i>"
+            },
+            'vanhoa-2': {
+                prompt: "Soạn thư mời tham dự lễ kỷ niệm ngày thương binh liệt sĩ 27/7 tại xã.",
+                steps: [
+                    "Lấy biểu mẫu thư mời họp hành chính.",
+                    "Điền thời gian tổ chức, địa điểm và đại biểu kính gửi.",
+                    "Xác định danh mục khách mời ưu tiên."
+                ],
+                title: "THƯ MỜI THAM DỰ LỄ KỶ NIỆM NGÀY THƯƠNG BINH LIỆT SĨ",
+                body: "UBND XÃ THẠNH TÂN kính gửi: Đại diện gia đình chính sách, người có công cách mạng trên địa bàn xã.<br><br>Nhân kỷ niệm 79 năm ngày Thương binh - Liệt sĩ (27/07/1947 - 27/07/2026), nhằm tri ân những công lao đóng góp to lớn của các anh hùng liệt sĩ, thương bệnh binh. UBND xã Thạnh Tân trân trọng kính mời quý đại biểu tới tham dự Lễ kỷ niệm:<br><br>- <b>Thời gian:</b> 08 giờ 00 phút ngày 27 tháng 07 năm 2026.<br>- <b>Địa điểm:</b> Hội trường lớn UBND xã Thạnh Tân (Ấp Thạnh Trung, Tây Ninh).<br><br>Sự hiện diện của quý đại biểu là niềm vinh hạnh lớn cho UBND xã chúng tôi. Rất hân hạnh được đón tiếp!"
+            },
+            'vanphong-1': {
+                prompt: "Dự thảo báo cáo tuần công tác cải cách thủ tục hành chính tại một cửa xã.",
+                steps: [
+                    "Kết xuất dữ liệu phần mềm một cửa điện tử thành phố.",
+                    "Thống kê tổng hồ sơ tiếp nhận, số lượng trả trước hạn và đúng hạn.",
+                    "Viết dự thảo đánh giá cải cách thủ tục hành chính tuần 3 tháng 6."
+                ],
+                title: "DỰ THẢO BÁO CÁO CÔNG TÁC CẢI CÁCH TTHC TUẦN 3 THÁNG 6",
+                body: "Ủy ban nhân dân xã Thạnh Tân báo cáo kết quả thực hiện công tác cải cách thủ tục hành chính tuần 3 tháng 6 năm 2026:<br><br>1. <b>Số liệu tiếp nhận hồ sơ:</b><br>- Tổng số hồ sơ tiếp nhận mới: 112 hồ sơ.<br>- Số hồ sơ đã giải quyết: 98 hồ sơ.<br>- Trong đó: Trả trước hạn: 82 hồ sơ (Đạt tỷ lệ: 83.6%), Đúng hạn: 16 hồ sơ (16.4%). Không có hồ sơ trễ hạn.<br><br>2. <b>Đánh giá chung:</b> Bộ phận Một cửa duy trì thái độ phục vụ lịch sự, chu đáo. Cán bộ chuyên môn xử lý hồ sơ nhanh chóng trên cổng dịch vụ công trực tuyến của tỉnh Tây Ninh."
+            },
+            'vanphong-2': {
+                prompt: "Tờ trình nâng cấp trang thiết bị CNTT bộ phận một cửa xã Thạnh Tân.",
+                steps: [
+                    "Kiểm tra hiện trạng thiết bị: 2 máy tính chạy chậm, máy quét hóa đơn bị hỏng sensor.",
+                    "Tham chiếu bảng giá trang thiết bị CNTT Sở Thông tin Truyền thông Tây Ninh.",
+                    "Soạn tờ trình gửi UBND Thành phố cấp ngân sách bổ sung."
+                ],
+                title: "TỜ TRÌNH XIN CẤP KINH PHÍ NÂNG CẤP THIẾT BỊ CNTT",
+                body: "Kính gửi: Ủy ban nhân dân thành phố Tây Ninh.<br><br>Nhằm phục vụ tốt công tác chuyển đổi số và nâng cao chất lượng dịch vụ công tại bộ phận một cửa xã Thạnh Tân. UBND xã Thạnh Tân kính trình UBND thành phố xem xét phê duyệt nâng cấp trang thiết bị CNTT:<br><br>1. <b>Hiện trạng:</b> 02 máy tính văn phòng cấu hình cũ (từ năm 2018) thường xuyên gặp lỗi treo máy, 01 máy quét hồ sơ một cửa bị hỏng sensor không quét được tài liệu hai mặt.<br>2. <b>Đề xuất mua sắm bổ sung:</b> 02 Bộ máy tính để bàn mới, 01 Máy quét tốc độ cao chuyên dụng.<br>3. <b>Dự toán tổng kinh phí:</b> 35.000.000đ (Ba mươi lăm triệu đồng chẵn). Kính trình UBND thành phố phê duyệt."
+            }
+        };
+
+        // Run Preset Scenario
+        function runScenario(key) {
+            const data = templates[key];
+            if (!data) return;
+
+            // Clear doc view & set status
+            document.getElementById('docPlaceholder').classList.remove('hidden');
+            document.getElementById('docRealContent').classList.add('hidden');
+            document.getElementById('digitalSig').classList.remove('visible');
+            document.getElementById('approveBtn').disabled = true;
+            
+            const appStatus = document.getElementById('appStatus');
+            appStatus.className = 'approval-status';
+            appStatus.textContent = 'ĐANG SOẠN THẢO';
+            document.getElementById('appInfo').textContent = 'AI đang thiết lập tài liệu...';
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            // 1. User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message msg-user';
+            userMsg.innerHTML = `Chạy tác vụ: <strong>${data.prompt}</strong>`;
+            chatMessages.appendChild(userMsg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // 2. Agent Reasoning Block
+            setTimeout(() => {
+                const agentMsg = document.createElement('div');
+                agentMsg.className = 'message msg-agent';
+                agentMsg.innerHTML = `Tôi đang xử lý tác vụ theo yêu cầu. Quy trình thực thi gồm các tầng kỹ năng:`;
+                
+                const reasonBox = document.createElement('div');
+                reasonBox.className = 'reasoning-box';
+                agentMsg.appendChild(reasonBox);
+                chatMessages.appendChild(agentMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                let stepIndex = 0;
+                function runStep() {
+                    if (stepIndex < data.steps.length) {
+                        const stepDiv = document.createElement('div');
+                        stepDiv.className = 'reasoning-step active';
+                        stepDiv.innerHTML = `<span class="reasoning-dot"></span> <span>${data.steps[stepIndex]}</span>`;
+                        reasonBox.appendChild(stepDiv);
+                        
+                        if (stepIndex > 0) {
+                            reasonBox.children[stepIndex-1].className = 'reasoning-step done';
+                        }
+                        
+                        stepIndex++;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        setTimeout(runStep, 800);
+                    } else {
+                        // All steps completed -> output document
+                        reasonBox.children[stepIndex-1].className = 'reasoning-step done';
+                        
+                        // Final agent chat bubble
+                        const finalTxt = document.createElement('div');
+                        finalTxt.style.marginTop = '12px';
+                        finalTxt.innerHTML = `✓ <strong>Đã hoàn thành!</strong> Bản dự thảo <em>"${data.title}"</em> đã được xuất thành công ở cửa sổ bên phải. Đồng chí hãy kiểm tra và phê duyệt phát hành.`;
+                        agentMsg.appendChild(finalTxt);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        // Output document text
+                        document.getElementById('docPlaceholder').classList.add('hidden');
+                        document.getElementById('docRealContent').classList.remove('hidden');
+                        document.getElementById('previewTitle').innerHTML = data.title;
+                        document.getElementById('previewBody').innerHTML = data.body;
+
+                        // Set approval bar
+                        appStatus.textContent = 'CHỜ PHÊ DUYỆT';
+                        appStatus.className = 'approval-status';
+                        document.getElementById('appInfo').textContent = 'Vui lòng kiểm tra và ký số';
+                        document.getElementById('approveBtn').disabled = false;
+                    }
+                }
+                runStep();
+            }, 600);
+        }
+
+        // Approve document Action
+        function approveDocument() {
+            document.getElementById('digitalSig').classList.add('visible');
+            
+            const appStatus = document.getElementById('appStatus');
+            appStatus.textContent = 'ĐÃ KÝ SỐ';
+            appStatus.className = 'approval-status approved';
+            
+            document.getElementById('appInfo').textContent = 'Văn bản đã ban hành liên thông';
+            document.getElementById('approveBtn').disabled = true;
+
+            // Agent congrats
+            setTimeout(() => {
+                const chatMessages = document.getElementById('chatMessages');
+                const congrats = document.createElement('div');
+                congrats.className = 'message msg-agent';
+                congrats.innerHTML = `📢 <strong>Hệ thống thông báo:</strong> Văn bản đã được ký số mã hóa và gửi tự động liên thông lên trục văn bản của Thành phố Tây Ninh thành công. Luồng công việc kết thúc.`;
+                chatMessages.appendChild(congrats);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 800);
+        }
+
+        // Custom Chat Command input
+        function sendCustomMessage() {
+            const input = document.getElementById('chatInput');
+            const txt = input.value.trim();
+            if (txt === '') return;
+
+            input.value = '';
+
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // User bubble
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message msg-user';
+            userMsg.textContent = txt;
+            chatMessages.appendChild(userMsg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Mock reply
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.className = 'message msg-agent';
+                
+                let answer = `Tôi đã nhận lệnh: "${txt}". Tuy nhiên, đây là phiên bản Demo thử nghiệm. Đồng chí vui lòng chọn các kịch bản hành chính đã được thiết lập sẵn ở thanh bên trái để trải nghiệm luồng tự động hóa 3 tầng của Hermes Agent.`;
+                
+                if (txt.toLowerCase().includes('đất') || txt.toLowerCase().includes('địa chính')) {
+                    answer = `Liên quan đến yêu cầu đất đai/địa chính của đồng chí, hãy click vào kịch bản <strong>"Lập Biên bản kiểm tra hiện trạng thửa đất số 79"</strong> ở bên trái để xem cách Hermes Agent tự động lấy thông tin từ bản đồ số và soạn biên bản mẫu.`;
+                } else if (txt.toLowerCase().includes('tiêm') || txt.toLowerCase().includes('y tế')) {
+                    answer = `Để xem luồng tự động tổng hợp số liệu tiêm phòng dịch bệnh, đồng chí vui lòng chọn <strong>"Trạm Y tế xã"</strong> ở thanh trái và chạy kịch bản mẫu.`;
+                }
+
+                reply.innerHTML = answer;
+                chatMessages.appendChild(reply);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 800);
+        }
+
+        // Catch Enter key on input
+        document.getElementById('chatInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') sendCustomMessage();
+        });
+
+    </script>
+</body>
+</html>
