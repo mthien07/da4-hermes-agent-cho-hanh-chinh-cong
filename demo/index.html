@@ -69,6 +69,10 @@
         .scenario-box { display: flex; flex-direction: column; gap: 10px; }
         .scenario-btn { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); color: var(--text-main); padding: 14px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 13px; transition: all 0.2s; line-height: 1.4; border-left: 3px solid transparent; }
         .scenario-btn:hover { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); transform: translateX(4px); border-left-color: var(--primary); }
+        .audit-list { display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto; }
+        .audit-item { border: 1px solid var(--border-glass); border-left: 3px solid var(--accent-teal); border-radius: 10px; padding: 10px 12px; background: rgba(255, 255, 255, 0.03); font-size: 12px; line-height: 1.4; color: var(--text-sub); }
+        .audit-item strong { display: block; color: var(--text-main); margin-bottom: 2px; font-size: 12px; }
+        .audit-time { color: var(--accent-teal); font-family: 'Fira Code', monospace; font-size: 11px; }
 
         /* Center Panel: Chat */
         .chat-container { background: var(--bg-panel); border: 1px solid var(--border-glass); border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
@@ -117,9 +121,13 @@
         .approval-info { display: flex; align-items: center; gap: 12px; }
         .approval-status { font-size: 12px; text-transform: uppercase; font-weight: 700; padding: 6px 14px; border-radius: 100px; background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); }
         .approval-status.approved { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border-color: rgba(16, 185, 129, 0.3); }
+        .approval-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
         .approve-btn { background: linear-gradient(135deg, var(--accent-green), #059669); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: all 0.2s; }
         .approve-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5); }
         .approve-btn:disabled { background: #334155; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+        .secondary-btn { background: rgba(255, 255, 255, 0.06); color: var(--text-main); border: 1px solid var(--border-glass); padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .secondary-btn:hover:not(:disabled) { border-color: var(--primary); color: #fff; transform: translateY(-2px); }
+        .secondary-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
         /* Digital Signature */
         .digital-sig { border: 2px solid var(--accent-red); padding: 10px 16px; color: var(--accent-red); font-family: 'Times New Roman', serif; font-weight: 700; border-radius: 4px; display: inline-block; margin-top: 16px; transform: rotate(-8deg); opacity: 0; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -143,12 +151,21 @@
             .doc-paper { min-height: 500px; padding: 20px; font-size: 13px; }
             .doc-edit-btn { top: 16px; right: 16px; }
             .approval-bar { flex-direction: column; text-align: center; }
-            .approve-btn { width: 100%; }
+            .approval-actions, .approve-btn, .secondary-btn { width: 100%; }
+            .approval-actions { flex-direction: column; }
         }
         
         /* 🚀 Hardware Acceleration */
         .reasoning-step, .digital-sig, .status-dot, .send-btn {
             will-change: transform;
+        }
+
+        @media print {
+            body { background: #fff; color: #000; display: block; }
+            body::before, header, .sidebar, .chat-container, .approval-bar, .panel-header, .doc-edit-btn { display: none !important; }
+            .container, .workspace, .doc-container, .doc-viewer { display: block; width: 100%; height: auto; min-height: 0; padding: 0; margin: 0; background: #fff; border: 0; box-shadow: none; }
+            .doc-paper { display: block !important; max-width: none; min-height: 0; box-shadow: none; color: #000; padding: 24px; }
+            #docPlaceholder { display: none !important; }
         }
     </style>
 </head>
@@ -183,10 +200,10 @@
                 <div>
                     <div class="section-title">📂 Phân hệ Nghiệp vụ</div>
                     <div class="dept-list">
-                        <button class="dept-btn active" onclick="switchDept('diachich')"><span style="font-size:18px">🗺️</span> Địa chính - Đất đai</button>
-                        <button class="dept-btn" onclick="switchDept('yte')"><span style="font-size:18px">🏥</span> Y tế - Sức khỏe</button>
-                        <button class="dept-btn" onclick="switchDept('vanhoa')"><span style="font-size:18px">📢</span> Văn hóa - Tuyên truyền</button>
-                        <button class="dept-btn" onclick="switchDept('vanphong')"><span style="font-size:18px">📋</span> Văn phòng - Thống kê</button>
+                        <button class="dept-btn active" onclick="switchDept('diachich', this)"><span style="font-size:18px">🗺️</span> Địa chính - Đất đai</button>
+                        <button class="dept-btn" onclick="switchDept('yte', this)"><span style="font-size:18px">🏥</span> Y tế - Sức khỏe</button>
+                        <button class="dept-btn" onclick="switchDept('vanhoa', this)"><span style="font-size:18px">📢</span> Văn hóa - Tuyên truyền</button>
+                        <button class="dept-btn" onclick="switchDept('vanphong', this)"><span style="font-size:18px">📋</span> Văn phòng - Thống kê</button>
                     </div>
                 </div>
 
@@ -213,6 +230,16 @@
                         <button class="scenario-btn" onclick="runScenario('vanphong-2')">📅 Tờ trình xin nâng cấp máy tính Một cửa</button>
                     </div>
                 </div>
+
+                <div>
+                    <div class="section-title">🧾 Nhật ký Kiểm soát</div>
+                    <div class="audit-list" id="auditLog">
+                        <div class="audit-item">
+                            <strong>Phiên demo sẵn sàng</strong>
+                            <span class="audit-time">--:--:--</span> Chưa có tác vụ phát sinh.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Center Chat Panel -->
@@ -230,7 +257,7 @@
 
                 <div class="chat-input-bar">
                     <button class="voice-btn" id="voiceBtn" title="Ra lệnh bằng giọng nói" onclick="simulateVoiceCommand()">🎤</button>
-                    <input type="text" id="chatInput" placeholder="Nhập yêu cầu: Soạn thảo văn bản, tra cứu luật..." onkeydown="if(e.key === 'Enter') sendCustomMessage()">
+                    <input type="text" id="chatInput" placeholder="Nhập yêu cầu: Soạn thảo văn bản, tra cứu luật..." onkeydown="handleChatKeydown(event)">
                     <button class="send-btn" onclick="sendCustomMessage()">➔</button>
                 </div>
             </div>
@@ -290,19 +317,99 @@
                         <div class="approval-status" id="appStatus">Chưa có văn bản</div>
                         <span style="font-size: 12px; color: var(--text-main);" id="appInfo">--</span>
                     </div>
-                    <button class="approve-btn" id="approveBtn" disabled onclick="approveDocument()">Ký số & Phát hành</button>
+                    <div class="approval-actions">
+                        <button class="secondary-btn" id="printBtn" disabled onclick="printDocument()">In / PDF</button>
+                        <button class="secondary-btn" id="exportBtn" disabled onclick="exportDocument()">Xuất HTML</button>
+                        <button class="approve-btn" id="approveBtn" disabled onclick="approveDocument()">Ký số & Phát hành</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        let currentDocument = null;
+
+        function formatAuditTime() {
+            return new Date().toLocaleTimeString('vi-VN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function escapeHtml(value) {
+            const element = document.createElement('div');
+            element.textContent = value;
+            return element.innerHTML;
+        }
+
+        function sanitizeDocumentHtml(html) {
+            const template = document.createElement('template');
+            template.innerHTML = html;
+
+            template.content.querySelectorAll('script, iframe, object, embed').forEach(node => node.remove());
+            template.content.querySelectorAll('*').forEach(node => {
+                Array.from(node.attributes).forEach(attribute => {
+                    const attributeName = attribute.name.toLowerCase();
+                    const attributeValue = attribute.value.trim().toLowerCase();
+                    if (attributeName.startsWith('on') || attributeValue.startsWith('javascript:')) {
+                        node.removeAttribute(attribute.name);
+                    }
+                });
+            });
+
+            return template.innerHTML;
+        }
+
+        function getCurrentDocumentSnapshot() {
+            const title = document.getElementById('previewTitle').textContent.trim();
+            const body = sanitizeDocumentHtml(document.getElementById('previewBody').innerHTML.trim());
+
+            return {
+                title: title || currentDocument?.title || 'van-ban-hermes',
+                body: body || currentDocument?.body || ''
+            };
+        }
+
+        function addAudit(title, detail) {
+            const auditLog = document.getElementById('auditLog');
+            const item = document.createElement('div');
+            item.className = 'audit-item';
+
+            const titleElement = document.createElement('strong');
+            titleElement.textContent = title;
+            const timeElement = document.createElement('span');
+            timeElement.className = 'audit-time';
+            timeElement.textContent = formatAuditTime();
+
+            item.appendChild(titleElement);
+            item.appendChild(timeElement);
+            item.appendChild(document.createTextNode(` ${detail}`));
+            auditLog.prepend(item);
+        }
+
+        function initializeAuditLog() {
+            const initialTime = document.querySelector('#auditLog .audit-time');
+            if (initialTime) initialTime.textContent = formatAuditTime();
+        }
+
+        function setDocumentActionsEnabled(enabled) {
+            document.getElementById('printBtn').disabled = !enabled;
+            document.getElementById('exportBtn').disabled = !enabled;
+        }
+
         // UI Controls
-        function switchDept(dept) {
+        function switchDept(dept, activeButton) {
             document.querySelectorAll('.dept-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.scenario-box').forEach(box => box.classList.add('hidden'));
-            event.currentTarget.classList.add('active');
+            activeButton.classList.add('active');
             document.getElementById('scen-' + dept).classList.remove('hidden');
+            addAudit('Chuyển phân hệ', `Đã mở nhóm nghiệp vụ ${activeButton.textContent.trim()}.`);
+        }
+
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter') sendCustomMessage();
         }
 
         // Voice Simulation
@@ -313,6 +420,7 @@
             btn.classList.add('recording');
             const input = document.getElementById('chatInput');
             input.value = "Đang thu âm giọng nói...";
+            addAudit('Ghi âm yêu cầu', 'Hermes đang mô phỏng nhận diện lệnh bằng giọng nói.');
             
             setTimeout(() => {
                 btn.classList.remove('recording');
@@ -416,6 +524,9 @@
             document.getElementById('docRealContent').classList.add('hidden');
             document.getElementById('digitalSig').classList.remove('visible');
             document.getElementById('approveBtn').disabled = true;
+            setDocumentActionsEnabled(false);
+            currentDocument = null;
+            addAudit('Tiếp nhận tác vụ', `Yêu cầu mới: ${data.prompt}`);
             
             const appStatus = document.getElementById('appStatus');
             appStatus.className = 'approval-status';
@@ -469,11 +580,18 @@
                         document.getElementById('docRealContent').classList.remove('hidden');
                         document.getElementById('previewTitle').innerHTML = data.title;
                         document.getElementById('previewBody').innerHTML = data.body;
+                        currentDocument = {
+                            title: data.title,
+                            body: data.body,
+                            createdAt: new Date().toISOString()
+                        };
 
                         // Enable Approval
                         appStatus.textContent = 'CHỜ PHÊ DUYỆT';
                         document.getElementById('appInfo').textContent = 'Cán bộ kiểm tra và Ký số hợp lệ';
                         document.getElementById('approveBtn').disabled = false;
+                        setDocumentActionsEnabled(true);
+                        addAudit('Dự thảo sẵn sàng', `AI đã kết xuất văn bản "${data.title}".`);
                     }
                 }
                 execStep();
@@ -488,12 +606,47 @@
             appStatus.className = 'approval-status approved';
             document.getElementById('appInfo').textContent = 'Liên thông trục văn bản Tỉnh thành công!';
             document.getElementById('approveBtn').disabled = true;
+            addAudit('Ký số hoàn tất', 'Cán bộ đã phê duyệt và phát hành văn bản qua trục liên thông.');
 
             setTimeout(() => {
                 const chat = document.getElementById('chatMessages');
                 chat.innerHTML += `<div class="message msg-agent" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3)">🚀 <strong>Thông báo Hệ thống:</strong> Văn bản đã ký số được gắn mã QR định danh và chuyển phát điện tử thành công qua Trục liên thông (LGSP). Giao dịch hoàn tất!</div>`;
                 chat.scrollTop = chat.scrollHeight;
             }, 1000);
+        }
+
+        function printDocument() {
+            if (!currentDocument) return;
+            const snapshot = getCurrentDocumentSnapshot();
+            addAudit('In / PDF', `Cán bộ mở hộp thoại in cho "${snapshot.title}".`);
+            window.print();
+        }
+
+        function exportDocument() {
+            if (!currentDocument) return;
+            const snapshot = getCurrentDocumentSnapshot();
+            const safeTitle = escapeHtml(snapshot.title);
+
+            const html = `<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<title>${safeTitle}</title>
+<body style="font-family: 'Times New Roman', serif; line-height: 1.6; padding: 32px;">
+<h1 style="text-align:center; font-size: 18px;">${safeTitle}</h1>
+<div>${snapshot.body}</div>
+<hr>
+<p><strong>Hermes Audit:</strong> Xuất lúc ${new Date().toLocaleString('vi-VN')}</p>
+</body>
+</html>`;
+
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${snapshot.title.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}.html`;
+            link.click();
+            URL.revokeObjectURL(url);
+            addAudit('Xuất HTML', `Đã xuất bản nháp "${snapshot.title}" thành tệp HTML.`);
         }
 
         // Custom Input Fallback
@@ -504,15 +657,28 @@
             input.value = '';
 
             const chat = document.getElementById('chatMessages');
-            chat.innerHTML += `<div class="message msg-user">${txt}</div>`;
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message msg-user';
+            userMessage.textContent = txt;
+            chat.appendChild(userMessage);
             chat.scrollTop = chat.scrollHeight;
 
             setTimeout(() => {
-                let answer = `Hệ thống đã nhận lệnh: "${txt}". <br><br><em>(Do đây là phiên bản Demo Offline, đồng chí vui lòng bấm vào các kịch bản chuẩn hóa ở Menu bên trái để xem hiệu ứng render văn bản)</em>`;
-                chat.innerHTML += `<div class="message msg-agent">${answer}</div>`;
+                const answer = document.createElement('div');
+                answer.className = 'message msg-agent';
+                answer.appendChild(document.createTextNode(`Hệ thống đã nhận lệnh: "${txt}".`));
+                answer.appendChild(document.createElement('br'));
+                answer.appendChild(document.createElement('br'));
+                const note = document.createElement('em');
+                note.textContent = '(Do đây là phiên bản Demo Offline, đồng chí vui lòng bấm vào các kịch bản chuẩn hóa ở Menu bên trái để xem hiệu ứng render văn bản)';
+                answer.appendChild(note);
+                chat.appendChild(answer);
                 chat.scrollTop = chat.scrollHeight;
+                addAudit('Lệnh tự do', 'Demo offline đã ghi nhận lệnh nhập tay và yêu cầu chọn kịch bản chuẩn hóa.');
             }, 800);
         }
+
+        initializeAuditLog();
 
     </script>
 </body>

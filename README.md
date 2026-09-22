@@ -108,12 +108,33 @@ open demo/index.html
 
 > 💡 Demo web mô phỏng giao diện **Hermes Agent** với kịch bản phòng Địa chính, Trạm Y tế và Tuyên truyền. Bao gồm Thinking Log animation và Human-in-the-loop approval.
 
+## 🧪 Chạy & kiểm tra pilot demo
+
+```bash
+# Mở trực tiếp
+open demo/index.html
+
+# Hoặc chạy local server nếu trình duyệt chặn tính năng tải file
+python3 -m http.server 8080
+```
+
+Demo hiện có:
+- Chọn phân hệ nghiệp vụ và kịch bản chuẩn hóa.
+- Hiển thị thinking log từng bước.
+- Kết xuất bản nháp văn bản hành chính.
+- Nhật ký kiểm soát cho từng thao tác.
+- Cán bộ duyệt cuối, ký số mô phỏng, in/PDF hoặc xuất HTML.
+
+> Lưu ý: Đây là demo offline, chưa kết nối LLM/on-premise runtime thật. Các workflow và dữ liệu trong demo là kịch bản mô phỏng để trình bày pilot.
+
 ## 📁 Cấu trúc dự án
 
 ```
 da4-hermes-agent-cho-hanh-chinh-cong/
 ├── demo/
 │   └── index.html          # Web demo Hermes Agent Chat + Approval
+├── plans/
+│   └── 20260627-da4-hermes-demo-pilot-hardening/
 ├── docs/
 │   ├── m02-m03-ho-so-du-thi.md  # Hồ sơ dự thi M-02 & M-03
 │   ├── pitch-deck.md            # Pitch Deck (10 slides)
