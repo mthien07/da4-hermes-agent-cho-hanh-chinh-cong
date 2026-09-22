@@ -274,8 +274,8 @@
                         Hãy chọn một kịch bản hoặc ra lệnh<br>để AI tự động thiết lập dự thảo văn bản.
                     </div>
                     
-                    <div id="docRealContent" class="doc-paper hidden" contenteditable="true">
-                        <button class="doc-edit-btn" contenteditable="false" onclick="alert('Bật chế độ soạn thảo Word Editor!')">Sửa trực tiếp</button>
+                    <div id="docRealContent" class="doc-paper hidden">
+                        <button class="doc-edit-btn" contenteditable="false" onclick="toggleDirectEdit()">✏️ Sửa trực tiếp</button>
                         <div class="doc-header">
                             CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>
                             Độc lập - Tự do - Hạnh phúc<br>
@@ -613,6 +613,28 @@
                 chat.innerHTML += `<div class="message msg-agent" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3)">🚀 <strong>Thông báo Hệ thống:</strong> Văn bản đã ký số được gắn mã QR định danh và chuyển phát điện tử thành công qua Trục liên thông (LGSP). Giao dịch hoàn tất!</div>`;
                 chat.scrollTop = chat.scrollHeight;
             }, 1000);
+        }
+
+        function toggleDirectEdit() {
+            const docPaper = document.getElementById('docRealContent');
+            const editBtn = document.querySelector('.doc-edit-btn');
+            if (!docPaper || docPaper.classList.contains('hidden')) {
+                addAudit('Chưa có văn bản', 'Đồng chí vui lòng chọn kịch bản để tạo văn bản trước khi chỉnh sửa.');
+                return;
+            }
+            const isEditing = docPaper.getAttribute('contenteditable') === 'true';
+            if (isEditing) {
+                docPaper.setAttribute('contenteditable', 'false');
+                docPaper.style.outline = 'none';
+                if (editBtn) editBtn.textContent = '✏️ Sửa trực tiếp';
+                addAudit('Lưu văn bản', 'Cán bộ đã hoàn tất hiệu chỉnh trực tiếp trên văn bản.');
+            } else {
+                docPaper.setAttribute('contenteditable', 'true');
+                docPaper.style.outline = '2px dashed var(--primary)';
+                if (editBtn) editBtn.textContent = '💾 Đang soạn thảo...';
+                docPaper.focus();
+                addAudit('Chế độ soạn thảo', 'Cán bộ đang trực tiếp gõ và chỉnh sửa nội dung văn bản.');
+            }
         }
 
         function printDocument() {
