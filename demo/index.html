@@ -524,12 +524,12 @@
                 steps: [
                     { i: "💻", t: "Phân tích yêu cầu thiết bị: Máy tính + Scan 2 mặt." },
                     { i: "📋", t: "Áp bảng giá định mức của Sở Tài chính." },
-                    { i: "📄", t: "Soạn tờ trình xin kinh phí cấp Thành phố." }
+                    { i: "📄", t: "Soạn tờ trình xin kinh phí gửi Chủ tịch UBND xã." }
                 ],
                 dept: "Bộ phận Một cửa",
                 subtitle: "(V/v: Xin cấp kinh phí nâng cấp trang thiết bị CNTT)",
                 title: "TỜ TRÌNH XIN CẤP KINH PHÍ MUA SẮM THIẾT BỊ CNTT",
-                body: "Kính gửi: Chủ tịch UBND xã.<br><br>Để đảm bảo công tác chuyển đổi số tại Một cửa, UBND xã Mẫu kính trình xin mua sắm:<br>- 02 Máy tính bộ (Cấu hình chuẩn văn phòng).<br>- 01 Máy Scan 2 mặt tốc độ cao.<br><br>Tổng dự toán: 35.000.000 VNĐ. Kính mong UBND Thành phố xem xét duyệt chi."
+                body: "Kính gửi: Chủ tịch UBND xã.<br><br>Để đảm bảo công tác chuyển đổi số tại Một cửa, UBND xã Mẫu kính trình xin mua sắm:<br>- 02 Máy tính bộ (Cấu hình chuẩn văn phòng).<br>- 01 Máy Scan 2 mặt tốc độ cao.<br><br>Tổng dự toán: 35.000.000 VNĐ. Kính mong Chủ tịch UBND xã xem xét duyệt chi."
             }
         };
 
@@ -614,7 +614,7 @@
 
                         // Enable Approval
                         appStatus.textContent = 'CHỜ PHÊ DUYỆT';
-                        document.getElementById('appInfo').textContent = 'Cán bộ kiểm tra và Ký số hợp lệ';
+                        document.getElementById('appInfo').textContent = 'Chờ cán bộ có thẩm quyền kiểm tra và ký số';
                         document.getElementById('approveBtn').disabled = false;
                         setDocumentActionsEnabled(true);
                         addAudit('Dự thảo sẵn sàng', `AI đã kết xuất văn bản "${data.title}".`);
