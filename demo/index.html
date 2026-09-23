@@ -167,9 +167,12 @@
             .doc-paper { display: block !important; max-width: none; min-height: 0; box-shadow: none; color: #000; padding: 24px; }
             #docPlaceholder { display: none !important; }
         }
+            .demo-ribbon { position: absolute; top: 3px; left: 50%; transform: translateX(-50%); z-index: 9000; background: #2b2410; color: #f4b942; border: 1px solid rgba(244,185,66,0.55); padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; pointer-events: none; white-space: nowrap; font-family: Inter, system-ui, sans-serif; }
+        @media (max-width: 768px) { .demo-ribbon { position: fixed; bottom: 12px; top: auto; font-size: 11px; white-space: normal; text-align: center; width: calc(100% - 48px); } }
     </style>
 </head>
 <body>
+    <div class="demo-ribbon">Bản demo mô phỏng · Văn bản mẫu, đơn vị giả định · Chưa ký số/liên thông thật</div>
 
     <div class="container">
         <!-- Header -->
@@ -184,10 +187,10 @@
             <div class="system-status">
                 <div class="status-pill">
                     <span class="status-dot"></span>
-                    <span>Hermes AI Online</span>
+                    <span>Hermes AI (mô phỏng)</span>
                 </div>
                 <div style="color: var(--text-sub); border-left: 1px solid var(--border-glass); padding-left: 16px;">
-                    Cơ sở tri thức: Luật Đất đai 2024, Y tế...
+                    Cơ sở tri thức (minh họa): Luật Đất đai 2024, Y tế...
                 </div>
             </div>
         </header>
@@ -246,7 +249,7 @@
             <div class="chat-container">
                 <div class="panel-header">
                     <span>💬 Cổng giao tiếp Hermes Agent</span>
-                    <span style="font-size:11px; font-weight:400; color:var(--text-sub)">Mã hóa End-to-End</span>
+                    <span style="font-size:11px; font-weight:400; color:var(--text-sub)">Bản demo offline</span>
                 </div>
                 
                 <div class="chat-messages" id="chatMessages">
@@ -282,7 +285,7 @@
                             <span style="font-weight: normal; font-size:12px;">--------------------------</span>
                         </div>
                         <div style="text-align: left; font-size: 13px; margin-bottom: 24px;">
-                            <strong>UBND XÃ THẠNH TÂN</strong><br>
+                            <strong>UBND XÃ MẪU</strong><br>
                             Tổ kiểm tra địa chính
                         </div>
                         <center>
@@ -303,8 +306,8 @@
                                 <span style="font-size:12px; color:#64748b; font-style: italic;">(Phê duyệt Ký số)</span><br>
                                 <div class="digital-sig" id="digitalSig" contenteditable="false">
                                     [ KÝ SỐ ĐIỆN TỬ ]<br>
-                                    CHỮ KÝ HỢP LỆ<br>
-                                    UBND XÃ THẠNH TÂN<br>
+                                    KÝ SỐ (MÔ PHỎNG)<br>
+                                    UBND XÃ MẪU<br>
                                     TÂY NINH - VIỆT NAM
                                 </div>
                             </div>
@@ -437,10 +440,10 @@
                     { i: "🎧", t: "Nhận diện giọng nói (Speech-to-Text) -> Văn bản." },
                     { i: "🧠", t: "Phân tích NLP: Loại VB = Biên bản; Chủ thể = Thửa 79, ông B." },
                     { i: "🔍", t: "Truy vấn CSDL Địa chính: Thửa 79, bản đồ 12, diện tích 250m2." },
-                    { i: "📑", t: "Gắp dữ liệu vào biểu mẫu chuẩn Sở TNMT Tây Ninh." }
+                    { i: "📑", t: "Điền dữ liệu vào biểu mẫu biên bản (minh họa)." }
                 ],
                 title: "BIÊN BẢN KIỂM TRA HIỆN TRẠNG SỬ DỤNG ĐẤT",
-                body: "Hôm nay, vào lúc 09 giờ 00 phút ngày 23/06/2026, tại thực địa thửa đất số 79, tờ bản đồ 12, tọa lạc tại ấp Thạnh Trung, xã Thạnh Tân, Tây Ninh.<br><br>Chúng tôi gồm:<br>1. Ông Nguyễn Văn Hùng - Cán bộ Địa chính.<br>2. Ông Lê Minh Tâm - Trưởng ấp.<br><br>Tiến hành lập biên bản đối với hộ ông Trần Văn B. Ghi nhận hiện trạng: Ranh giới thửa đất sử dụng ổn định, đúng diện tích 250m2 theo hồ sơ, không tranh chấp. Kính trình UBND xã phê duyệt chủ trương cấp GCNQSDĐ."
+                body: "Hôm nay, vào lúc 09 giờ 00 phút ngày 23/06/2026, tại thực địa thửa đất số 79, tờ bản đồ 12, tọa lạc tại ấp 1, xã Mẫu, Tây Ninh.<br><br>Chúng tôi gồm:<br>1. Ông Nguyễn Văn Hùng - Cán bộ Địa chính.<br>2. Ông Lê Minh Tâm - Trưởng ấp.<br><br>Tiến hành lập biên bản đối với hộ ông Trần Văn B. Ghi nhận hiện trạng: Ranh giới thửa đất sử dụng ổn định, đúng diện tích 250m2 theo hồ sơ, không tranh chấp. Kính trình UBND xã phê duyệt chủ trương cấp GCNQSDĐ."
             },
             'diachich-2': {
                 prompt: "Quy trình đăng ký biến động đất đai mới nhất.",
@@ -456,21 +459,21 @@
                 prompt: "Thống kê tiêm chủng mở rộng quý 1.",
                 steps: [
                     { i: "📊", t: "API Call: Kết nối hệ thống Tiêm chủng Quốc gia." },
-                    { i: "🧮", t: "Lọc dữ liệu: Xã Thạnh Tân, Trẻ < 1 tuổi, Quý 1/2026." },
+                    { i: "🧮", t: "Lọc dữ liệu: Xã Mẫu, Trẻ < 1 tuổi, Quý 1/2026." },
                     { i: "📝", t: "Tổng hợp tỷ lệ % và lập báo cáo tự động." }
                 ],
                 title: "BÁO CÁO KẾT QUẢ TIÊM CHỦNG QUÝ 1",
-                body: "Trạm Y tế xã Thạnh Tân báo cáo:<br><br>- Tổng trẻ trong diện tiêm: 145 trẻ.<br>- Đã tiêm đủ liều: 138 trẻ (Đạt 95.1%).<br>- Tỷ lệ tiêm vắc xin 5 trong 1 (DPT-VGB-Hib) đạt 96.2%.<br><br>Đánh giá: Đạt chỉ tiêu Thành phố giao. An toàn tiêm chủng đảm bảo 100%, không ghi nhận phản ứng phụ nặng."
+                body: "Trạm Y tế xã Mẫu báo cáo:<br><br>- Tổng trẻ trong diện tiêm: 145 trẻ.<br>- Đã tiêm đủ liều: 138 trẻ (Đạt 95.1%).<br>- Tỷ lệ tiêm vắc xin 5 trong 1 (DPT-VGB-Hib) đạt 96.2%.<br><br>Đánh giá: Đạt chỉ tiêu Thành phố giao. An toàn tiêm chủng đảm bảo 100%, không ghi nhận phản ứng phụ nặng."
             },
             'yte-2': {
                 prompt: "Xin kinh phí 2.5 triệu mua hóa chất diệt lăng quăng.",
                 steps: [
-                    { i: "⚠️", t: "Trigger: Cảnh báo 3 ca sốt xuất huyết mới tại ấp Thạnh Trung." },
+                    { i: "⚠️", t: "Trigger: Cảnh báo 3 ca sốt xuất huyết mới tại ấp 1." },
                     { i: "💰", t: "So sánh định mức chi ngân sách xã (Còn dư)." },
                     { i: "📄", t: "Soạn thảo tờ trình xin cấp kinh phí khẩn." }
                 ],
                 title: "TỜ TRÌNH TRIỂN KHAI CHIẾN DỊCH DIỆT LĂNG QUĂNG",
-                body: "Kính gửi: Chủ tịch UBND xã Thạnh Tân.<br><br>Do ghi nhận 03 ca sốt xuất huyết mới, Trạm Y tế kính trình UBND xã phê duyệt chiến dịch tổng vệ sinh toàn xã vào Chủ nhật ngày 28/06/2026.<br><br><b>Đề xuất kinh phí:</b> 2.500.000đ (Mua hóa chất và hỗ trợ nước uống cho lực lượng Đoàn thanh niên). Kính mong Chủ tịch phê duyệt để kịp thời dập dịch."
+                body: "Kính gửi: Chủ tịch UBND xã Mẫu.<br><br>Do ghi nhận 03 ca sốt xuất huyết mới, Trạm Y tế kính trình UBND xã phê duyệt chiến dịch tổng vệ sinh toàn xã vào Chủ nhật ngày 28/06/2026.<br><br><b>Đề xuất kinh phí:</b> 2.500.000đ (Mua hóa chất và hỗ trợ nước uống cho lực lượng Đoàn thanh niên). Kính mong Chủ tịch phê duyệt để kịp thời dập dịch."
             },
             'vanhoa-1': {
                 prompt: "Viết kịch bản phát thanh phòng chống SXH ngắn gọn.",
@@ -490,7 +493,7 @@
                     { i: "👥", t: "Trích xuất danh sách 120 gia đình chính sách để Merge." }
                 ],
                 title: "THƯ MỜI DỰ LỄ KỶ NIỆM 27/7",
-                body: "<b>Kính gửi:</b> Các hộ gia đình chính sách, người có công.<br><br>Nhân kỷ niệm 79 năm ngày Thương binh - Liệt sĩ, UBND xã Thạnh Tân trân trọng kính mời quý đại biểu tới dự Lễ kỷ niệm để xã nhà bày tỏ lòng tri ân sâu sắc.<br><br>- Thời gian: 08:00, ngày 27/07/2026.<br>- Địa điểm: Hội trường UBND xã.<br><br>Rất hân hạnh được đón tiếp!"
+                body: "<b>Kính gửi:</b> Các hộ gia đình chính sách, người có công.<br><br>Nhân kỷ niệm 79 năm ngày Thương binh - Liệt sĩ, UBND xã Mẫu trân trọng kính mời quý đại biểu tới dự Lễ kỷ niệm để xã nhà bày tỏ lòng tri ân sâu sắc.<br><br>- Thời gian: 08:00, ngày 27/07/2026.<br>- Địa điểm: Hội trường UBND xã.<br><br>Rất hân hạnh được đón tiếp!"
             },
             'vanphong-1': {
                 prompt: "Báo cáo Một cửa tuần 3 tháng 6.",
@@ -510,7 +513,7 @@
                     { i: "📄", t: "Soạn tờ trình xin kinh phí cấp Thành phố." }
                 ],
                 title: "TỜ TRÌNH XIN CẤP KINH PHÍ MUA SẮM THIẾT BỊ CNTT",
-                body: "Kính gửi: UBND thành phố Tây Ninh.<br><br>Để đảm bảo công tác chuyển đổi số tại Một cửa, UBND xã Thạnh Tân kính trình xin mua sắm:<br>- 02 Máy tính bộ (Cấu hình chuẩn văn phòng).<br>- 01 Máy Scan 2 mặt tốc độ cao.<br><br>Tổng dự toán: 35.000.000 VNĐ. Kính mong UBND Thành phố xem xét duyệt chi."
+                body: "Kính gửi: Chủ tịch UBND xã.<br><br>Để đảm bảo công tác chuyển đổi số tại Một cửa, UBND xã Mẫu kính trình xin mua sắm:<br>- 02 Máy tính bộ (Cấu hình chuẩn văn phòng).<br>- 01 Máy Scan 2 mặt tốc độ cao.<br><br>Tổng dự toán: 35.000.000 VNĐ. Kính mong UBND Thành phố xem xét duyệt chi."
             }
         };
 
@@ -604,13 +607,13 @@
             const appStatus = document.getElementById('appStatus');
             appStatus.textContent = 'ĐÃ KÝ SỐ';
             appStatus.className = 'approval-status approved';
-            document.getElementById('appInfo').textContent = 'Liên thông trục văn bản Tỉnh thành công!';
+            document.getElementById('appInfo').textContent = '(Mô phỏng) Bản thật: ký số và gửi qua trục liên thông sau khi phê duyệt.';
             document.getElementById('approveBtn').disabled = true;
-            addAudit('Ký số hoàn tất', 'Cán bộ đã phê duyệt và phát hành văn bản qua trục liên thông.');
+            addAudit('Phê duyệt (mô phỏng)', 'Cán bộ phê duyệt văn bản. Bản thật sẽ ký số và gửi qua trục liên thông.');
 
             setTimeout(() => {
                 const chat = document.getElementById('chatMessages');
-                chat.innerHTML += `<div class="message msg-agent" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3)">🚀 <strong>Thông báo Hệ thống:</strong> Văn bản đã ký số được gắn mã QR định danh và chuyển phát điện tử thành công qua Trục liên thông (LGSP). Giao dịch hoàn tất!</div>`;
+                chat.innerHTML += `<div class="message msg-agent" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3)">🚀 <strong>Thông báo (mô phỏng):</strong> Ở bản thật, văn bản chỉ được ký số bằng chứng thư số của người có thẩm quyền, gắn mã định danh và gửi qua trục liên thông văn bản (LGSP). Bản demo này không ký số hay gửi văn bản thật.</div>`;
                 chat.scrollTop = chat.scrollHeight;
             }, 1000);
         }
